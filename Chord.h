@@ -50,7 +50,7 @@ public:
 		(this->local_keys).clear();
 	}
 
-	// Move keys to the newly added node
+	// Move keys (if any) to the newly added node
 	void moveKeys(Node* succ, int new_node_id) {
 		vector<int> v;
 		for (int i = 0; i < succ->local_keys.size(); i++) {
@@ -110,9 +110,21 @@ public:
 		}
 	}
 
-	// TODO
-	int find(int key);
+	// Find a key on a node in the Chord network
+	string find(int key) {
+		if(local_lookup(key)) {
+			return "Found Key: " + to_string(key) + " on Node: " +
+					to_string(id);
+		} else {
+				if(fingertable->fingerTable[0]->local_lookup(key)) {
+					return "Found Key: " + to_string(key) + " on Node: " +
+							to_string(fingertable->fingerTable[0]->id);
+				} else
+					return fingertable->fingerTable[0]->find(key);
+		}
+	}
 
+	// Insert key
 	void insert(int key) {
 		if (key < 0) {
 			cerr << "\n *** Error Key is less than 0 *** \n";
@@ -129,7 +141,6 @@ public:
 			while(succ->id < key) {
 				succ = succ->fingertable->fingerTable[0];
 			}
-
 			succ->insert_key(key);
 		}
 	}
