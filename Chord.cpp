@@ -33,15 +33,22 @@ int main() {
 
 	n2->join(n0);
 	cout << "\n n2 joins the Chord network\n";
-//	n0->insert(16);
-//	n1->insert(18);
-//	n2->insert(44);
-//	n1->insert(35);
+	n0->insert(16);
+	n1->insert(18);
+	n2->insert(44);
+	n1->insert(35);
 
 	n0->fingertable->printFingerTable(n0->predecessor->id);
 	n1->fingertable->printFingerTable(n1->predecessor->id);
 	n2->fingertable->printFingerTable(n2->predecessor->id);
 	cout << "\n\n";
+
+	cout << n0->find(50) << endl;
+	cout << n0->find(4) << endl;
+	cout << n1->find(29) << endl;
+	cout << n1->find(14) << endl;
+	cout << n2->find(3) << endl;
+	cout << n2->find(18) << endl;
 
 	return 0;
 }
