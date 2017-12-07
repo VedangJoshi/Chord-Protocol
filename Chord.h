@@ -52,14 +52,18 @@ public:
 
 	// Move keys to the newly added node
 	void moveKeys(Node* succ, int new_node_id) {
+		vector<int> v;
 		for (int i = 0; i < succ->local_keys.size(); i++) {
 			if(succ->local_keys[i] <= new_node_id &&
 					succ->local_keys[i] > succ->predecessor->id) {
-				cout << succ->local_keys[i] << " " << new_node_id << endl;
 				insert_key(succ->local_keys[i]);
-				succ->local_keys.erase(succ->local_keys.begin() + i);
+			} else {
+				v.push_back(succ->local_keys[i]);
 			}
 		}
+
+		succ->local_keys.clear();
+		succ->local_keys = v;
 	}
 
 	// Node join operation
@@ -115,14 +119,17 @@ public:
 			return;
 		}
 
-		if (key < this->id && key < predecessor->id) {
-			predecessor->insert_key(key);
-		} else if (key < this->id && predecessor->id > this->id) {
-			this->insert_key(key);
-		} else if (key <= this->id) {
-			this->insert_key(key);
+		Node* succ = this->fingertable->fingerTable[0];
+
+		if (succ->id < id && id <= key) {
+			succ->insert_key(key);
+		} else if (predecessor->id > id && key > predecessor->id) {
+			insert_key(key);
 		} else {
-			Node* succ = find_successor(id);
+			while(succ->id < key) {
+				succ = succ->fingertable->fingerTable[0];
+			}
+
 			succ->insert_key(key);
 		}
 	}
@@ -133,7 +140,7 @@ public:
 			cout << "No key provided to insert!" << endl;
 		}
 
-		this->local_keys.push_back(key);
+		local_keys.push_back(key);
 	}
 
 	// Search a key locally
