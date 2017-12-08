@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 
 using namespace std;
 
@@ -36,7 +37,7 @@ class Node {
 public:
 	uint64_t id;
 	Node* predecessor;
-	std::vector<int> local_keys;
+	std::map<int, int> local_keys;
 	FingerTable *fingertable;
 
 	Node(int id) {
@@ -52,18 +53,21 @@ public:
 
 	// Move keys (if any) to the newly added node
 	void moveKeys(Node* succ, int new_node_id) {
-		vector<int> v;
-		for (int i = 0; i < succ->local_keys.size(); i++) {
-			if(succ->local_keys[i] <= new_node_id &&
-					succ->local_keys[i] > succ->predecessor->id) {
-				insert_key(succ->local_keys[i]);
+		map<int, int> m;
+		map<int, int>:: iterator iter;
+
+		for (map<int, int>:: iterator iter = succ->local_keys.begin();
+				iter != succ->local_keys.end(); iter++) {
+			if(iter->first <= new_node_id &&
+					iter->first > succ->predecessor->id) {
+				insert_key(iter->first, iter->second);
 			} else {
-				v.push_back(succ->local_keys[i]);
+				m.insert(pair<int, int>(iter->first, iter->second));
 			}
 		}
 
 		succ->local_keys.clear();
-		succ->local_keys = v;
+		succ->local_keys = m;
 	}
 
 	// Node join operation
@@ -113,11 +117,11 @@ public:
 	// Find a key on a node in the Chord network
 	string find(int key) {
 		if(local_lookup(key)) {
-			return "Found Key: " + to_string(key) + " on Node: " +
+			return "Found Value: " + to_string(key) + " on Node: " +
 					to_string(id);
 		} else {
 				if(fingertable->fingerTable[0]->local_lookup(key)) {
-					return "Found Key: " + to_string(key) + " on Node: " +
+					return "Found value: " + to_string(key) + " on Node: " +
 							to_string(fingertable->fingerTable[0]->id);
 				} else
 					return fingertable->fingerTable[0]->find(key);
@@ -125,7 +129,7 @@ public:
 	}
 
 	// Insert key
-	void insert(int key) {
+	void insert(int key, int value) {
 		if (key < 0) {
 			cerr << "\n *** Error Key is less than 0 *** \n";
 			return;
@@ -134,24 +138,24 @@ public:
 		Node* succ = this->fingertable->fingerTable[0];
 
 		if (succ->id < id && id <= key) {
-			succ->insert_key(key);
+			succ->insert_key(key, value);
 		} else if (predecessor->id > id && key > predecessor->id) {
-			insert_key(key);
+			insert_key(key, value);
 		} else {
 			while(succ->id < key) {
 				succ = succ->fingertable->fingerTable[0];
 			}
-			succ->insert_key(key);
+			succ->insert_key(key, value);
 		}
 	}
 
 	// Insert a key on this node
-	void insert_key(int key) {
+	void insert_key(int key, int value) {
 		if (!key) {
 			cout << "No key provided to insert!" << endl;
 		}
 
-		local_keys.push_back(key);
+		local_keys.insert(pair<int, int>(key, value));
 	}
 
 	// Search a key locally
@@ -176,8 +180,9 @@ void FingerTable::printFingerTable(int pred) {
 	}
 
 	cout << "\nKeys : ";
-	for (int i = 0; i < local_node->local_keys.size(); i++) {
-		cout << local_node->local_keys[i] << "  ";
+	for (map<int, int>:: iterator iter = local_node->local_keys.begin();
+			iter != local_node->local_keys.end(); iter++) {
+		cout << iter->second << "  ";
 	}
 
 	cout << "\nSucc : " << this->fingerTable[0]->id;
