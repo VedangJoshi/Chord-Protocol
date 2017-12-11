@@ -1,2 +1,2 @@
 # Chord-Protocol
-## Code to simulate Chord protocol
+### Code to simulate the Chord protocol
