@@ -20,6 +20,10 @@ int main() {
 	cout << "\n\n";
 
 	n1->join(n0);
+
+	// stabilize
+	n1->stabilize();
+	n0->stabilize();
 	cout << "\n n1 joins the Chord network\n";
 
 	n1->insert(9, 9);
@@ -32,6 +36,12 @@ int main() {
 	cout << "\n\n";
 
 	n2->join(n0);
+
+	// stabilize
+	n0->stabilize();
+	n1->stabilize();
+	n2->stabilize();
+
 	cout << "\n n2 joins the Chord network\n";
 	n0->insert(16, 16);
 	n1->insert(18, 18);
@@ -43,6 +53,8 @@ int main() {
 	n2->fingertable->printFingerTable(n2->predecessor->id);
 	cout << "\n\n";
 
+	// Random search for values on non-local nodes i.e nodes that may/may not contain the
+	// keys being searched for, locally on them
 	cout << n0->find(50) << endl;
 	cout << n0->find(4) << endl;
 	cout << n2->find(29) << endl;
@@ -52,5 +64,4 @@ int main() {
 
 	return 0;
 }
-
 
