@@ -1,7 +1,7 @@
 # Chord-Protocol
 ### Code to simulate the Chord protocol
 <br>
-#### Features<br>
+##### Features<br>
 ##### (1) Node joins at the correct location in the Chord network
 The node joins the network using a given node, which helps it to attach itself at the correct location.
 
