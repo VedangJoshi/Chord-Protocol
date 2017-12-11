@@ -8,6 +8,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <math.h>
 
 using namespace std;
 
@@ -99,6 +100,38 @@ public:
 
 			// Update successor's predecssor to self
 			succ->predecessor = this;
+
+			// update finger table
+			// fingerTable[0] is always the successor
+			createFingerTable();
+		}
+	}
+
+	// creates the finger table
+	void createFingerTable() {
+		for (int i = 1; i < fingertable->fingerTable.size(); i++) {
+			Node* ptr = this;
+			int flag = 0;
+
+			for (int j = 0; j < pow(2, i); j++) {
+				ptr = ptr->fingertable->fingerTable[0];
+
+				if(ptr == this) {
+					flag = 1;
+					break;
+				}
+			}
+
+			if (flag == 0) {
+				fingertable->fingerTable[i] = ptr;
+			}
+		}
+	}
+
+	// stabilize the finger tables
+	void stabilize() {
+		for (int i = 1; i < fingertable->fingerTable.size(); i++) {
+			fingertable->fingerTable[i]->createFingerTable();
 		}
 	}
 
@@ -117,11 +150,11 @@ public:
 	// Find a key on a node in the Chord network
 	string find(int key) {
 		if(local_lookup(key)) {
-			return "Found Value: " + to_string(key) + " on Node: " +
+			return "Found Value - " + to_string(key) + " on Node - " +
 					to_string(id);
 		} else {
 				if(fingertable->fingerTable[0]->local_lookup(key)) {
-					return "Found value: " + to_string(key) + " on Node: " +
+					return "Found value - " + to_string(key) + " on Node - " +
 							to_string(fingertable->fingerTable[0]->id);
 				} else
 					return fingertable->fingerTable[0]->find(key);
@@ -176,7 +209,9 @@ void FingerTable::printFingerTable(int pred) {
 	cout << "\nFingerTable\n";
 
 	for (int i = 0; i < fingerTable.size(); i++) {
-		cout << i+1 << " : " << fingerTable[i]->fingertable->nodeId << "\n";
+		if( i == 0 || (nodeId != fingerTable[i]->fingertable->nodeId)) {
+			cout << i+1 << " : " << fingerTable[i]->fingertable->nodeId << "\n";
+		}
 	}
 
 	cout << "\nKeys : ";
@@ -184,10 +219,6 @@ void FingerTable::printFingerTable(int pred) {
 			iter != local_node->local_keys.end(); iter++) {
 		cout << iter->second << "  ";
 	}
-
-	cout << "\nSucc : " << this->fingerTable[0]->id;
-	cout << "\nPred : " << pred;
-
 	cout << "\n**********************\n";
 }
 
