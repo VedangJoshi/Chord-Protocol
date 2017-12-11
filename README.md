@@ -12,4 +12,4 @@ The code prints finger table entries for its <i>i</i> sucessors at least at a lo
 The successor's suitable keys, if any present, are transferred to the newly attached node.
 
 ##### (4) Key searches based on finger table 
-A key can be searched on a random node, even if the key isn't present on that node.
+A key can be searched on a random node, even if the key isn't present locally on that node.
