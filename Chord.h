@@ -151,15 +151,16 @@ public:
 		int node_id = 0;
 		string ret_val;
 
+		cout << "\n Searching Key " << key << " on node " << id << endl;
 		node_id = local_key_lookup(key);
 		if (node_id >= 0) {
-			ret_val = "Found value - " + to_string(node_id) + " on Node - "
+			ret_val = " Found value - " + to_string(node_id) + " on Node - "
 					+ to_string(id) + "\n";
 		} else {
 			for (int i = 0; i < fingertable->fingerTable.size(); i++) {
 				node_id = fingertable->fingerTable[i]->local_key_lookup(key);
 				if (node_id >= 0) {
-					ret_val =  "Found value - " + to_string(node_id) + " on Node - "
+					ret_val =  " Found value - " + to_string(node_id) + " on Node - "
 							+ to_string(fingertable->fingerTable[i]->id) + "\n";
 					break;
 				}
